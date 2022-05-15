@@ -5,20 +5,20 @@ from parsimonious.grammar import Grammar
 class Parser:
     grammar = Grammar(
         """
-        instruction     = receive / drop / inspect / move / look / use
+        instruction     = receive / drop / inspect / move / look / use / activate
         receive         = get ws nounphrase
         drop            = "drop" ws nounphrase
         inspect         = examine_synonym ws nounphrase
         look            = look_s
         move            = (go ws)? direction
         use             = "use" ws c_nounphrase
+        activate        = ("activate" / "turn on") ws item
         look_s          = ~"look( around)?"i / ~"l"i
         examine_synonym = "examine" / "inspect" / "check" / "look at"
         direction       = ~"north"i / ~"south"i / ~"east"i / ~"west"i / ~"[NSEW]"i 
         get             = "get" / "pick up" / "take" / "acquire"
         go              = ~"go"i
-        subject         = conjunction ws item
-        c_nounphrase    = item (subject)?
+        c_nounphrase    = item ws conjunction ws item
         conjunction     = (~"with"i / ~"and"i / ~"from "i / ~"to"i / ~"on"i) ws
         item            = (noun (ws)?)+
         nounphrase      = noun (ws noun)* 
@@ -92,9 +92,13 @@ class Parser:
             _, _, c_nounphrase = visited_children
             return {"use": c_nounphrase}
 
+        def visit_activate(self, node, visited_children):
+            _, _, item = visited_children
+            return {"activate": item}
+
         def visit_c_nounphrase(self, node, visited_children):
-            item1, optional_clause = visited_children
-            return {item1[0]: optional_clause[0][0]}
+            item1, _, _, _, item2 = visited_children
+            return {item1: item2}
 
             # if non_empty_string:
             #     return {"use": {noun: subject.text}}
@@ -104,16 +108,16 @@ class Parser:
             return node.text
 
         def visit_item(self, node, visited_children):
-            for child in visited_children:
-                return child
+            """ Items have the form of (noun) (space?),
+            somehow this results in a space after every noun.
+            This node holds the whole item name (ancient golden sword) versus its children
+            which are 'ancient', 'golden', and 'sword' and all the spaces.
+            Returns the item name with trailing space removed."""
+            return node.text.rstrip()
 
         def visit_nounphrase(self, node, visited_children):
             """ Visits the NOUNPHRASE node to return the noun/phrase """
             return node.text
-
-        def visit_subject(self, node, visited_children):
-            _, _, item = visited_children
-            return item
 
         def generic_visit(self, node, visited_children):
             """ At the bottom level, just send the node back. """

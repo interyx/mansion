@@ -115,14 +115,6 @@ class UseTest(unittest.TestCase):
     def setUp(self):
         self.parser = parser.Parser()
 
-    def test_default_use(self):
-        output = self.parser.parse_command("use fork")
-        self.assertEqual(output.get('use'), "fork")
-
-    def test_advanced_use(self):
-        output = self.parser.parse_command("use ancient box of doom")
-        self.assertEqual(output.get('use'), "ancient box of doom")
-
     def test_use_on_subject(self):
         output = self.parser.parse_command("use fork on salad")
         self.assertEqual(output.get('use'), {'fork': 'salad'})
@@ -131,6 +123,25 @@ class UseTest(unittest.TestCase):
         output = self.parser.parse_command("use black key on evil doorway")
         self.assertEqual(output.get('use'), {'black key': 'evil doorway'})
 
+class ActivateTest(unittest.TestCase):
+    def setUp(self):
+        self.parser = parser.Parser()
+
+    def test_basic_activate(self):
+        output = self.parser.parse_command("activate radio")
+        self.assertEqual(output.get('activate'), "radio")
+
+    def test_alt_activate(self):
+        output = self.parser.parse_command("turn on radio")
+        self.assertEqual(output.get('activate'), "radio")
+
+    def test_activate_multi(self):
+        output = self.parser.parse_command("activate ancient wooden radio")
+        self.assertEqual(output.get('activate'), "ancient wooden radio")
+
+    def test_alternate_multi_activate(self):
+        output = self.parser.parse_command("turn on devilishly handsome woman")
+        self.assertEqual(output.get('activate'), "devilishly handsome woman")
 
 if __name__ == '__main__':
     unittest.main()
