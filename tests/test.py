@@ -1,4 +1,5 @@
 import unittest
+
 import parser
 
 
@@ -123,6 +124,7 @@ class UseTest(unittest.TestCase):
         output = self.parser.parse_command("use black key on evil doorway")
         self.assertEqual(output.get('use'), {'black key': 'evil doorway'})
 
+
 class ActivateTest(unittest.TestCase):
     def setUp(self):
         self.parser = parser.Parser()
@@ -142,6 +144,7 @@ class ActivateTest(unittest.TestCase):
     def test_alternate_multi_activate(self):
         output = self.parser.parse_command("turn on devilishly handsome woman")
         self.assertEqual(output.get('activate'), "devilishly handsome woman")
+
 
 if __name__ == '__main__':
     unittest.main()
