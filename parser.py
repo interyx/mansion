@@ -19,7 +19,7 @@ class Parser:
         get             = "get" / "pick up" / "take" / "acquire"
         go              = ~"go"i
         c_nounphrase    = item ws conjunction ws item
-        conjunction     = (~"with"i / ~"and"i / ~"from "i / ~"to"i / ~"on"i) ws
+        conjunction     = (~"with"i / ~"and"i / ~"from "i / ~"to"i / ~"on"i)
         item            = (noun (ws)?)+
         nounphrase      = noun (ws noun)* 
         noun            = ~"(?!on|with|and|from|to)[A-Za-z]+"i
